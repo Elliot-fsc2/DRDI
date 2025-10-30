@@ -3,6 +3,7 @@
 namespace App\Http\Response;
 
 use App\Filament\Instructor\Pages\InstructorDashboard;
+use App\Filament\Student\Pages\StudentDashbboard;
 use App\Filament\Student\Pages\Teststudent;
 use Filament\Pages\Dashboard;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as BaseLoginResponse;
@@ -55,7 +56,7 @@ class LoginResponse implements BaseLoginResponse
     }
 
     if ($user->isStudent()) {
-      return redirect()->to(Teststudent::getUrl(panel: 'student'));
+      return redirect()->to(StudentDashbboard::getUrl(panel: 'student'));
     }
 
     // Default: redirect to the intended URL (if any) or the main Filament dashboard
