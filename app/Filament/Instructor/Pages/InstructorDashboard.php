@@ -58,4 +58,20 @@ class InstructorDashboard extends Page
       ->whereRelation('academicYear', 'is_active', true)
       ->get();
   }
+
+  public static function canAccess(): bool
+  {
+    $user = Auth::user();
+
+    if (! $user || ! $user->instructor) {
+      return false;
+    }
+
+    // Deny access to instructors who have the 'DRDI Head' role. Only allow
+    // access when the instructor does NOT have that role.
+    return ! $user->instructor->roles()
+      ->whereIn('name', [
+        'DRDI Head',
+      ])->exists();
+  }
 }

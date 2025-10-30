@@ -3,13 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Filament\Models\Contracts\FilamentUser;
+
 use Filament\Panel;
+use App\Models\Student;
+use App\Models\Instructor;
+use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAppAuthentication, HasEmailAuthentication, HasAppAuthenticationRecovery
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
   use HasFactory, Notifiable;
@@ -34,6 +41,8 @@ class User extends Authenticatable implements FilamentUser
   protected $hidden = [
     'password',
     'remember_token',
+    'app_authentication_secret',
+    'app_authentication_recovery_codes',
   ];
 
   /**
@@ -46,6 +55,9 @@ class User extends Authenticatable implements FilamentUser
     return [
       'email_verified_at' => 'datetime',
       'password' => 'hashed',
+      'app_authentication_secret' => 'encrypted',
+      'app_authentication_recovery_codes' => 'encrypted:array',
+      'has_email_authentication' => 'boolean',
     ];
   }
 
@@ -58,6 +70,56 @@ class User extends Authenticatable implements FilamentUser
     };
   }
 
+  public function getAppAuthenticationSecret(): ?string
+  {
+    return $this->app_authentication_secret;
+  }
+
+  public function saveAppAuthenticationSecret(?string $secret): void
+  {
+    $this->app_authentication_secret = $secret;
+    $this->save();
+  }
+
+  public function getAppAuthenticationHolderName(): string
+  {
+    return $this->email;
+  }
+
+  /**
+   * @return ?array<string>
+   */
+  public function getAppAuthenticationRecoveryCodes(): ?array
+  {
+    // This method should return the user's saved app authentication recovery codes.
+
+    return $this->app_authentication_recovery_codes;
+  }
+
+  /**
+   * @param  array<string> | null  $codes
+   */
+  public function saveAppAuthenticationRecoveryCodes(?array $codes): void
+  {
+    // This method should save the user's app authentication recovery codes.
+
+    $this->app_authentication_recovery_codes = $codes;
+    $this->save();
+  }
+  public function hasEmailAuthentication(): bool
+  {
+    // This method should return true if the user has enabled email authentication.
+
+    return $this->has_email_authentication;
+  }
+
+  public function toggleEmailAuthentication(bool $condition): void
+  {
+    // This method should save whether or not the user has enabled email authentication.
+
+    $this->has_email_authentication = $condition;
+    $this->save();
+  }
   public function instructor(): \Illuminate\Database\Eloquent\Relations\HasOne
   {
     return $this->hasOne(Instructor::class);

@@ -10,9 +10,11 @@ use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Middleware\RedirectToProperPanelMiddleware;
+use Filament\Auth\MultiFactor\Email\EmailAuthentication;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -27,14 +29,14 @@ class InstructorPanelProvider extends PanelProvider
       ->path('instructor')
       ->brandLogo(fn() => view('filament.logo'))
       ->favicon(asset('images/ncst-logo.png'))
-      ->passwordReset()
+      ->profile(isSimple: false)
       ->colors([
         'primary' => Color::Sky,
       ])
       ->discoverResources(in: app_path('Filament/Instructor/Resources'), for: 'App\Filament\Instructor\Resources')
       ->discoverPages(in: app_path('Filament/Instructor/Pages'), for: 'App\Filament\Instructor\Pages')
       ->pages([
-        // Dashboard::class,
+        Dashboard::class,
       ])
       ->spa()
       ->databaseNotifications()
@@ -50,6 +52,11 @@ class InstructorPanelProvider extends PanelProvider
         SubstituteBindings::class,
         DisableBladeIconComponents::class,
         DispatchServingFilamentEvent::class,
+      ])
+      ->multiFactorAuthentication([
+        AppAuthentication::make()
+          ->recoverable(),
+        EmailAuthentication::make(),
       ])
       ->viteTheme('resources/css/filament/instructor/theme.css')
       ->authMiddleware([

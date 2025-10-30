@@ -2,23 +2,25 @@
 
 namespace App\Providers\Filament;
 
-use App\Http\Middleware\RedirectToProperPanelMiddleware;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
+use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Http\Middleware\RedirectToProperPanelMiddleware;
+use Filament\Auth\MultiFactor\Email\EmailAuthentication;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -28,6 +30,9 @@ class StudentPanelProvider extends PanelProvider
       ->id('student')
       ->path('')
       ->passwordReset()
+      ->brandLogo(fn() => view('filament.logo'))
+      ->favicon(asset('images/ncst-logo.png'))
+      ->profile(isSimple: false)
       ->login()
       ->colors([
         'primary' => Color::Amber,
@@ -54,6 +59,12 @@ class StudentPanelProvider extends PanelProvider
         DisableBladeIconComponents::class,
         DispatchServingFilamentEvent::class,
       ])
+      ->multiFactorAuthentication([
+        AppAuthentication::make()
+          ->recoverable(),
+        EmailAuthentication::make(),
+      ])
+      ->viteTheme('resources/css/filament/student/theme.css')
       ->authMiddleware([
         RedirectToProperPanelMiddleware::class,
         Authenticate::class,

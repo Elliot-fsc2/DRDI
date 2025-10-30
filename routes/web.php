@@ -8,4 +8,4 @@ Route::get('/', function () {
   return redirect()->to(Teststudent::getUrl(panel: 'student'));
 });
 
-// Route::get('/test', GroupCards::class);
+Route::redirect('/instructor/login', '/login')->name('login');
