@@ -60,6 +60,6 @@ class LoginResponse implements BaseLoginResponse
     }
 
     // Default: redirect to the intended URL (if any) or the main Filament dashboard
-    return redirect()->intended(Dashboard::getUrl(panel: 'admin'));
+    // return redirect()->intended(Dashboard::getUrl(panel: 'admin'));
   }
 }

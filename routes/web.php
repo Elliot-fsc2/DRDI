@@ -1,11 +1,8 @@
 <?php
 
-use App\Livewire\GroupCards;
 use Illuminate\Support\Facades\Route;
-use App\Filament\Student\Pages\Teststudent;
 
-Route::get('/', function () {
-  return redirect()->to(Teststudent::getUrl(panel: 'student'));
+
+Route::middleware('guest')->group(function () {
+  Route::redirect('/instructor/login', '/login')->name('login');
 });
-
-Route::redirect('/instructor/login', '/login')->name('login');
