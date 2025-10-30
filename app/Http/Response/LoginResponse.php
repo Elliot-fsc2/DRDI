@@ -55,11 +55,6 @@ class LoginResponse implements BaseLoginResponse
       return redirect()->to(InstructorDashboard::getUrl(panel: 'instructor'));
     }
 
-    if ($user->isStudent()) {
-      return redirect()->to(StudentDashbboard::getUrl(panel: 'student'));
-    }
-
-    // Default: redirect to the intended URL (if any) or the main Filament dashboard
-    // return redirect()->intended(Dashboard::getUrl(panel: 'admin'));
+    return redirect()->to(StudentDashbboard::getUrl(panel: 'student'));
   }
 }
