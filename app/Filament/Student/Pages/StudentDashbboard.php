@@ -10,6 +10,6 @@ class StudentDashbboard extends Page
 {
   protected string $view = 'filament.student.pages.student-dashbboard';
   protected static string|BackedEnum|null $navigationIcon = Heroicon::Home;
-  protected static ?string $navigationLabel = 'Dashboard';
-  protected static ?string $title = 'Dashboard';
+  protected static ?string $navigationLabel = 'Home';
+  protected static ?string $title = 'Home';
 }
